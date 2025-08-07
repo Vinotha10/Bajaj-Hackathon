@@ -1,0 +1,7 @@
+flask
+langchain
+gemini
+faiss-cpu
+python-dotenv
+pypdf
+requests
