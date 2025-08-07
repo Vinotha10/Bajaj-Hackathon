@@ -45,7 +45,7 @@ def answer_question(pdf_path, question):
     vector_store = FAISS.from_documents(chunks, embeddings)
 
     # ✅ Step 3: Configure Gemini
-    genai.configure(api_key=os.getenv("AIzaSyDUFbGH3C2Jlv_eYjkrxDcher3gUgCQq3A"))
+    genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
     model = genai.GenerativeModel("gemini-2.5-pro")
     llm = GeminiLLM(model=model)
 
@@ -80,3 +80,4 @@ Question:
     return {
         "answers": [result]
     }
+
