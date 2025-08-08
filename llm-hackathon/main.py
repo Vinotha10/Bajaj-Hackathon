@@ -1,71 +1,35 @@
-from flask import Flask, request, jsonify
+import streamlit as st
+import tempfile
+import os
 from qa_engine import answer_question
 
-import os
-import requests
+st.set_page_config(page_title="📄 Document Q&A", layout="centered")
 
-app = Flask(__name__)
+st.title("📄 Document Query Retrieval System")
+st.write("Upload a PDF and ask questions about it.")
 
-UPLOAD_FOLDER = './uploads'
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+# File upload
+uploaded_file = st.file_uploader("Upload your PDF document", type=["pdf"])
 
-# Step 1: Upload file
-@app.route('/upload', methods=['POST'])
-def upload_file():
-    file = request.files['document']
+# Question input
+question = st.text_input("Ask a question about the document")
 
-    if file:
-        file_path = os.path.join(UPLOAD_FOLDER, file.filename)
-        file.save(file_path)
-
-        return jsonify({
-            "message": "File uploaded successfully.",
-            "file_path": file_path,
-            "note": "Now send your question to /ask endpoint with this file path."
-        })
-
-    return "No file uploaded", 400
-
-# Step 2: Ask a question
-@app.route('/ask', methods=['POST'])
-def ask_question():
-    data = request.get_json()
-    file_path = data.get("file_path")
-    question = data.get("question")
-
-    if not file_path or not question:
-        return jsonify({"error": "file_path and question are required"}), 400
-
-    if not os.path.exists(file_path):
-        return jsonify({"error": "File not found"}), 404
-
-    result = answer_question(file_path, question)
-    return jsonify({
-        "question": question,
-        "answer": result["answers"]
-    })
-
-
-@app.route('/hackrx/run', methods=['POST'])
-def run_query():
-    data = request.get_json()
-    doc_url = data.get("documents")
-    questions = data.get("questions")
-
-    # Download document
-    file_name = "temp.pdf"
-    response = requests.get(doc_url)
-    with open(file_name, "wb") as f:
-        f.write(response.content)
-
-    all_answers = []
-    for question in questions:
-        result = answer_question(file_name, question)
-        all_answers.extend(result["answers"])  # ✅ matches output format
-
-    return jsonify({"answers": all_answers})
-
-if __name__ == '__main__':
-    import os
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 3000)))
-
+if st.button("Get Answer"):
+    if uploaded_file is None:
+        st.warning("Please upload a document first.")
+    elif question.strip() == "":
+        st.warning("Please enter a question.")
+    else:
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
+            tmp.write(uploaded_file.read())
+            tmp_path = tmp.name
+        
+        try:
+            # Call your existing backend logic
+            result = answer_question(tmp_path, question)
+            st.success("Answer:")
+            st.write(result["answers"][0])
+        except Exception as e:
+            st.error(f"Error: {str(e)}")
+        finally:
+            os.remove(tmp_path)
