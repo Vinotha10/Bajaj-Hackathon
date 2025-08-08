@@ -1,11 +1,12 @@
 streamlit
 flask
-langchain
+langchain-community
 google-generativeai
 faiss-cpu
 python-dotenv
 pypdf
 requests
 gunicorn
+
 
 
