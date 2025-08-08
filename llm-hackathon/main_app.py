@@ -33,19 +33,3 @@ def run_streamlit():
                 st.error(f"Error: {str(e)}")
             finally:
                 os.remove(tmp_path)
-
-# ----------- Flask Server Function -----------
-def run_flask():
-    from waitress import serve
-    serve(flask_app, host="0.0.0.0", port=5000)
-
-# ----------- Start Both Threads -----------
-if __name__ == "__main__":
-    flask_thread = threading.Thread(target=run_flask)
-    streamlit_thread = threading.Thread(target=lambda: os.system("streamlit run main.py --server.port=8501 --server.address=0.0.0.0"))
-
-    flask_thread.start()
-    streamlit_thread.start()
-
-    flask_thread.join()
-    streamlit_thread.join()
