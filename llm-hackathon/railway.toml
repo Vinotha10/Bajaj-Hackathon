@@ -1,0 +1,14 @@
+[build]
+# This runs during the build step
+command = "pip install -r requirements.txt"
+
+[start]
+# Railway will run this command when the container starts
+command = "python app.py"
+
+[env]
+# Railway sets PORT automatically; Flask needs to know which one to bind to
+PORT = "8080"
+
+# You can also put any secrets or API keys here,
+# but it’s better to add them in Railway’s dashboard under Variables
