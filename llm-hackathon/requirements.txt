@@ -1,3 +1,4 @@
+streamlit
 flask
 langchain
 gemini
@@ -6,3 +7,4 @@ python-dotenv
 pypdf
 requests
 gunicorn
+
