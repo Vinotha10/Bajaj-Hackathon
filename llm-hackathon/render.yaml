@@ -1,8 +1,0 @@
-services:
-  - type: web
-    name: bajaj-hackathon
-    env: python
-    plan: free
-    rootDir: llm-hackathon
-    buildCommand: ""
-    startCommand: gunicorn main:app
